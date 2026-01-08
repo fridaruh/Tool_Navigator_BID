@@ -1,0 +1,532 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tool Navigator - Which Tool Should I Use?</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Google+Sans:wght@400;500;700&family=Roboto:wght@300;400;500&display=swap"
+        rel="stylesheet">
+    <style>
+        :root {
+            --google-blue: #4285F4;
+            --google-red: #EA4335;
+            --google-yellow: #FBBC05;
+            --google-green: #34A853;
+            --gray-100: #F8F9FA;
+            --gray-800: #3C4043;
+        }
+
+        body {
+            font-family: 'Roboto', sans-serif;
+            background-color: #FFFFFF;
+            color: var(--gray-800);
+            overflow-x: hidden;
+        }
+
+        h1,
+        h2,
+        h3,
+        .google-font {
+            font-family: 'Google Sans', sans-serif;
+        }
+
+        .card {
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            border: 1px solid #dadce0;
+        }
+
+        .card:hover {
+            box-shadow: 0 1px 2px 0 rgba(60, 64, 67, 0.3), 0 1px 3px 1px rgba(60, 64, 67, 0.15);
+        }
+
+        .btn-primary {
+            background-color: var(--google-blue);
+            color: white;
+            transition: background-color 0.2s;
+        }
+
+        .btn-primary:hover {
+            background-color: #174ea6;
+        }
+
+        .btn-outline {
+            border: 1px solid #dadce0;
+            color: var(--google-blue);
+        }
+
+        .btn-outline:hover {
+            background-color: #f8f9fa;
+        }
+
+        .fade-in {
+            animation: fadeIn 0.5s ease-out forwards;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .progress-bar {
+            height: 4px;
+            background-color: #e8eaed;
+            border-radius: 2px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background-color: var(--google-blue);
+            transition: width 0.4s ease;
+        }
+
+        .tool-icon {
+            width: 48px;
+            height: 48px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 1rem;
+        }
+
+        .option-card {
+            cursor: pointer;
+            border: 2px solid transparent;
+        }
+
+        .option-card:hover {
+            background-color: #f8f9fa;
+            border-color: #e8eaed;
+        }
+
+        .option-card.selected {
+            border-color: var(--google-blue);
+            background-color: #e8f0fe;
+        }
+
+        /* Responsive adjustments */
+        @media (max-width: 640px) {
+            .container {
+                padding-left: 1.5rem;
+                padding-right: 1.5rem;
+            }
+        }
+    </style>
+</head>
+
+<body class="bg-white min-h-screen flex flex-col">
+
+    <!-- Header -->
+    <header class="py-6 px-8 flex items-center justify-between border-b border-gray-100">
+        <div class="flex items-center space-x-2">
+            <!-- Icon replaced with a simple representative mark or just text -->
+            <svg class="w-8 h-8 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                    d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01">
+                </path>
+            </svg>
+            <span class="text-xl font-medium text-gray-600 google-font">Tool Navigator</span>
+        </div>
+    </header>
+
+    <main class="flex-grow flex items-center justify-center p-4">
+        <div id="app-container" class="max-w-2xl w-full bg-white rounded-2xl p-8 card fade-in">
+            <!-- Progress Section -->
+            <div id="progress-section" class="mb-8">
+                <div class="flex justify-between items-end mb-2">
+                    <span id="step-count" class="text-sm font-medium text-gray-500">Step 1 of 6</span>
+                    <span class="text-xs text-gray-400">Decision Logic Engine</span>
+                </div>
+                <div class="progress-bar">
+                    <div id="progress-fill" class="progress-fill" style="width: 16.66%;"></div>
+                </div>
+            </div>
+
+            <!-- Content Area -->
+            <div id="quiz-content">
+                <!-- Dynamically injected -->
+            </div>
+
+            <!-- Navigation Buttons -->
+            <div class="mt-10 flex justify-between items-center">
+                <button id="btn-back" class="btn-outline px-6 py-2.5 rounded-md font-medium text-sm hidden">
+                    Back
+                </button>
+                <div class="flex-grow"></div>
+                <button id="btn-restart" class="text-gray-500 hover:text-gray-700 font-medium text-sm mr-6 hidden">
+                    Restart
+                </button>
+                <button id="btn-next" class="btn-primary px-8 py-2.5 rounded-md font-medium text-sm shadow-sm">
+                    Next
+                </button>
+            </div>
+        </div>
+    </main>
+
+    <footer class="py-6 text-center text-gray-400 text-sm">
+        &copy; 2026 by <a href="https://www.fridaruh.com" target="_blank" class="text-blue-500 hover:underline">Frida
+            Ruh</a> • Interactive Tool Decision Flow
+    </footer>
+
+    <script>
+        const flow = [
+            {
+                step: 1,
+                title: "What is the primary goal of the task?",
+                question: "Do you need to automate a recurring process?",
+                examples: [
+                    "When a meeting ends, automatically process transcript/summary",
+                    "When an email arrives, save attachments and notify",
+                    "Trigger actions across Outlook, Teams, SharePoint"
+                ],
+                options: [
+                    { label: "Yes, I need automation", value: "automate", result: "Power Automate" },
+                    { label: "No, it's something else", value: "continue" }
+                ]
+            },
+            {
+                step: 2,
+                title: "Task Structure",
+                question: "Is this a repeatable task with a clear structure?",
+                examples: [
+                    "Same type of email every time",
+                    "Same checklist or report format",
+                    "Same transformation from input → output"
+                ],
+                options: [
+                    { label: "Yes, it's repeatable", value: "repeatable" },
+                    { label: "No, it's dynamic/unique", value: "continue" }
+                ]
+            },
+            {
+                step: 2.1, // Sub-step for repeatable
+                title: "Agent Configuration",
+                question: "Refining your Agent needs:",
+                options: [
+                    { label: "I need it to read specific policies/documents", value: "agent_knowledge", result: "Copilot Agents (with Knowledge)" },
+                    { label: "I just want to reuse the prompt without rewriting", value: "agent_basic", result: "Copilot Agents" }
+                ]
+            },
+            {
+                step: 3,
+                title: "Research & Sources",
+                question: "Do you need research with traceable sources?",
+                ask: [
+                    "Do I need to justify claims?",
+                    "Do I need citations?",
+                    "Do I need to compare multiple external sources?"
+                ],
+                options: [
+                    { label: "Yes, I need citations and sources", value: "research", result: "Perplexity" },
+                    { label: "No, research isn't the focus", value: "continue" }
+                ]
+            },
+            {
+                step: 4,
+                title: "Drafting & Reasoning",
+                question: "Is the task mainly about drafting, reasoning, or ideation?",
+                ask: [
+                    "Am I exploring ideas?",
+                    "Am I drafting text?",
+                    "Am I shaping a structure or narrative?"
+                ],
+                options: [
+                    { label: "Yes, it's for thinking or writing", value: "ideation" },
+                    { label: "No, continuing search", value: "continue" }
+                ]
+            },
+            {
+                step: 4.1, // Sub-step for drafting
+                title: "Privacy & Environment",
+                question: "Where should this task happen?",
+                options: [
+                    { label: "Internal / Sensitive / Company data", value: "copilot_ent", result: "Copilot (Enterprise)" },
+                    { label: "Open-ended thinking / Experimentation", value: "chatgpt", result: "ChatGPT" }
+                ]
+            },
+            {
+                step: 5,
+                title: "Data Visualization",
+                question: "Is the task about understanding or explaining data visually?",
+                ask: [
+                    "Do I want to communicate one insight clearly?",
+                    "Do I need an interactive visualization?",
+                    "Is this for explanation, not dashboards?"
+                ],
+                options: [
+                    { label: "Yes, I need a visual insight", value: "visual", result: "Flourish" },
+                    { label: "No, keeping it textual/data-driven", value: "continue" }
+                ]
+            },
+            {
+                step: 6,
+                title: "Strict Accuracy",
+                question: "Do you need high accuracy strictly grounded in provided documents?",
+                ask: [
+                    "Must the output stay strictly within given files?",
+                    "Is accuracy more important than creativity?"
+                ],
+                options: [
+                    { label: "Yes, strict document grounding needed", value: "grounded", result: "NotebookLM / Gemini" },
+                    { label: "No, this concludes the guide", value: "end" }
+                ]
+            }
+        ];
+
+        const toolDetails = {
+            "Power Automate": {
+                desc: "Best for cross-app automation and recurring workflows.",
+                tags: ["Automation", "Microsoft 365", "Efficiency"],
+                color: "bg-blue-100 text-blue-700"
+            },
+            "Copilot Agents (with Knowledge)": {
+                desc: "Custom AI assistants grounded in your specific files and policies.",
+                tags: ["Repeatable", "Knowledge Base", "AI Assistant"],
+                color: "bg-purple-100 text-purple-700"
+            },
+            "Copilot Agents": {
+                desc: "Streamlined AI workflows for structured, repeatable tasks.",
+                tags: ["Efficiency", "Repeatable", "AI Assistant"],
+                color: "bg-indigo-100 text-indigo-700"
+            },
+            "Perplexity": {
+                desc: "The search engine for professional research with direct citations.",
+                tags: ["Research", "Citations", "Market Analysis"],
+                color: "bg-teal-100 text-teal-700"
+            },
+            "Copilot (Enterprise)": {
+                desc: "Secure AI for drafting and reasoning within company boundaries.",
+                tags: ["Privacy", "Drafting", "Corporate"],
+                color: "bg-blue-100 text-blue-800"
+            },
+            "ChatGPT": {
+                desc: "Premier tool for prompt design, creative brainstorming, and open experimentation.",
+                tags: ["Creativity", "Ideation", "Versatile"],
+                color: "bg-green-100 text-green-700"
+            },
+            "Flourish": {
+                desc: "Transform data into beautiful, interactive, and explanatory visualizations.",
+                tags: ["Data Viz", "Storytelling", "Interactive"],
+                color: "bg-pink-100 text-pink-700"
+            },
+            "NotebookLM / Gemini": {
+                desc: "AI research notebook strictly grounded in your provided documents for maximum accuracy.",
+                tags: ["Accuracy", "Research", "Analysis"],
+                color: "bg-orange-100 text-orange-700"
+            }
+        };
+
+        let currentFlowIndex = 0;
+        let selectedValue = null;
+        const history = [];
+
+        const quizContent = document.getElementById('quiz-content');
+        const btnNext = document.getElementById('btn-next');
+        const btnBack = document.getElementById('btn-back');
+        const btnRestart = document.getElementById('btn-restart');
+        const stepCount = document.getElementById('step-count');
+        const progressFill = document.getElementById('progress-fill');
+
+        function renderStep() {
+            const data = flow[currentFlowIndex];
+            selectedValue = null;
+            btnNext.disabled = true;
+            btnNext.style.opacity = "0.5";
+            btnNext.innerText = "Next";
+
+            // Update Progress
+            const displayStep = Math.floor(data.step);
+            stepCount.innerText = `Step ${displayStep} of 6`;
+            progressFill.style.width = `${(displayStep / 6) * 100}%`;
+
+            // Navigation visibility
+            btnBack.classList.toggle('hidden', currentFlowIndex === 0);
+            btnRestart.classList.add('hidden');
+
+            let html = `
+                <div class="fade-in">
+                    <h2 class="text-xs font-bold uppercase tracking-wider text-blue-600 mb-1">${data.title}</h2>
+                    <h1 class="text-2xl font-medium text-gray-900 mb-6 google-font">${data.question}</h1>
+            `;
+
+            if (data.examples) {
+                html += `
+                    <div class="mb-6 bg-gray-50 p-4 rounded-xl border border-gray-100">
+                        <span class="text-xs font-bold text-gray-400 uppercase mb-2 block">Examples</span>
+                        <ul class="space-y-2">
+                            ${data.examples.map(ex => `<li class="text-sm text-gray-600 flex items-start"><span class="mr-2 text-blue-500">•</span>${ex}</li>`).join('')}
+                        </ul>
+                    </div>
+                `;
+            }
+
+            if (data.ask) {
+                html += `
+                    <div class="mb-6 bg-blue-50 p-4 rounded-xl border border-blue-100">
+                        <span class="text-xs font-bold text-blue-400 uppercase mb-2 block">Ask yourself</span>
+                        <ul class="space-y-2">
+                            ${data.ask.map(a => `<li class="text-sm text-blue-700 flex items-center font-medium"><svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>${a}</li>`).join('')}
+                        </ul>
+                    </div>
+                `;
+            }
+
+            html += `<div class="space-y-3">`;
+            data.options.forEach((opt, idx) => {
+                html += `
+                    <div class="option-card p-4 rounded-xl border border-gray-200 flex items-center justify-between" onclick="selectOption(${idx})">
+                        <span class="text-gray-700 font-medium">${opt.label}</span>
+                        <div class="radio-circle w-5 h-5 rounded-full border-2 border-gray-300 flex items-center justify-center">
+                            <div class="radio-inner w-2.5 h-2.5 rounded-full bg-blue-500 hidden"></div>
+                        </div>
+                    </div>
+                `;
+            });
+            html += `</div></div>`;
+
+            quizContent.innerHTML = html;
+        }
+
+        window.selectOption = function (index) {
+            const options = document.querySelectorAll('.option-card');
+            options.forEach(opt => {
+                opt.classList.remove('selected');
+                opt.querySelector('.radio-inner').classList.add('hidden');
+                opt.querySelector('.radio-circle').classList.replace('border-blue-500', 'border-gray-300');
+            });
+
+            const selected = options[index];
+            selected.classList.add('selected');
+            selected.querySelector('.radio-inner').classList.remove('hidden');
+            selected.querySelector('.radio-circle').classList.replace('border-gray-300', 'border-blue-500');
+
+            selectedValue = flow[currentFlowIndex].options[index];
+            btnNext.disabled = false;
+            btnNext.style.opacity = "1";
+
+            if (selectedValue.result) {
+                btnNext.innerText = "See Recommendation";
+            } else {
+                btnNext.innerText = "Next";
+            }
+        };
+
+        function showResult(toolName) {
+            const tool = toolDetails[toolName] || { desc: "The perfect fit for your specific requirements.", tags: ["Productivity"], color: "bg-gray-100 text-gray-700" };
+
+            stepCount.innerText = "Result";
+            progressFill.style.width = "100%";
+            btnNext.classList.add('hidden');
+            btnBack.classList.remove('hidden');
+            btnRestart.classList.remove('hidden');
+
+            quizContent.innerHTML = `
+                <div class="fade-in text-center py-4">
+                    <div class="inline-flex items-center justify-center w-20 h-20 rounded-full bg-blue-50 mb-6">
+                        <svg class="w-10 h-10 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                        </svg>
+                    </div>
+                    <h2 class="text-sm font-bold uppercase tracking-wider text-gray-400 mb-2">Recommended Tool</h2>
+                    <h1 class="text-4xl font-bold text-gray-900 mb-4 google-font">${toolName}</h1>
+                    <p class="text-lg text-gray-600 mb-8 max-w-md mx-auto leading-relaxed">
+                        ${tool.desc}
+                    </p>
+                    
+                    <div class="flex flex-wrap justify-center gap-2 mb-8">
+                        ${tool.tags.map(tag => `<span class="px-3 py-1 rounded-full text-xs font-medium ${tool.color}">${tag}</span>`).join('')}
+                    </div>
+
+                    <div class="bg-gray-50 rounded-2xl p-6 text-left border border-gray-100">
+                        <h3 class="text-sm font-bold text-gray-700 mb-3 flex items-center">
+                            <svg class="w-4 h-4 mr-2" fill="currentColor" viewBox="0 0 20 20"><path d="M10 12a2 2 0 100-4 2 2 0 000 4z"/><path fill-rule="evenodd" d="M.458 10C1.732 5.943 5.522 3 10 3s8.268 2.943 9.542 7c-1.274 4.057-5.064 7-9.542 7S1.732 14.057.458 10zM14 10a4 4 0 11-8 0 4 4 0 018 0z" clip-rule="evenodd"/></svg>
+                            Key Insights
+                        </h3>
+                        <p class="text-sm text-gray-600 leading-relaxed">
+                            Based on your input, this tool offers the right balance of ${tool.tags[0].toLowerCase()} and features to help you complete your task efficiently without technical friction.
+                        </p>
+                    </div>
+                </div>
+            `;
+        }
+
+        function showEnd() {
+            stepCount.innerText = "Completed";
+            btnNext.classList.add('hidden');
+            btnBack.classList.remove('hidden');
+            btnRestart.classList.remove('hidden');
+
+            quizContent.innerHTML = `
+                <div class="fade-in text-center py-10">
+                    <h1 class="text-3xl font-medium text-gray-900 mb-4 google-font">End of the Journey</h1>
+                    <p class="text-gray-600 mb-8">It seems like none of these specific AI or automation tools are the primary focus for your current task, or you've explored all our suggestions.</p>
+                    <button onclick="location.reload()" class="btn-primary px-8 py-3 rounded-md font-medium">Start Again</button>
+                </div>
+            `;
+        }
+
+        btnNext.addEventListener('click', () => {
+            if (!selectedValue) return;
+
+            history.push(currentFlowIndex);
+
+            if (selectedValue.result) {
+                showResult(selectedValue.result);
+                return;
+            }
+
+            if (selectedValue.value === "end") {
+                showEnd();
+                return;
+            }
+
+            // Logic handling for branching
+            if (selectedValue.value === "repeatable") {
+                currentFlowIndex = 2; // Index of Agent Configuration
+            } else if (selectedValue.value === "ideation") {
+                currentFlowIndex = 5; // Index of Privacy & Env
+            } else {
+                // Regular linear flow increment, skipping sub-steps if needed
+                if (currentFlowIndex === 0) currentFlowIndex = 1;
+                else if (currentFlowIndex === 1) currentFlowIndex = 3;
+                else if (currentFlowIndex === 2) currentFlowIndex = 3; // From agents back to research
+                else if (currentFlowIndex === 3) currentFlowIndex = 4;
+                else if (currentFlowIndex === 4) currentFlowIndex = 6;
+                else if (currentFlowIndex === 5) currentFlowIndex = 6; // From privacy back to data viz
+                else if (currentFlowIndex === 6) currentFlowIndex = 7;
+            }
+
+            renderStep();
+        });
+
+        btnBack.addEventListener('click', () => {
+            if (history.length > 0) {
+                currentFlowIndex = history.pop();
+                btnNext.classList.remove('hidden');
+                renderStep();
+            }
+        });
+
+        btnRestart.addEventListener('click', () => {
+            location.reload();
+        });
+
+        // Initialize
+        window.onload = renderStep;
+    </script>
+</body>
+
+</html>
